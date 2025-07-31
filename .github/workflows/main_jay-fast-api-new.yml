@@ -42,30 +42,21 @@ jobs:
             .
             !venv/
 
-  deploy:
+   deploy:
     runs-on: ubuntu-latest
     needs: build
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: python-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2BB3A3A789D94560A6B77C7AED886D0B }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B3CB3EE509874B929141B11B21FD12AB }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8297B53DA27140CFA7C3A90869A7FACD }}
 
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
         with:
-          app-name: 'jay-fast-api-new'
-          slot-name: 'Production'
+          app-name: 'jay-fast-api-new'  # <-- double-check your App Service name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
+
           
